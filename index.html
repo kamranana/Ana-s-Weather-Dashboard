@@ -6,15 +6,8 @@
     <title>Weather Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-        /* Adding custom styles if needed */
-        .weather-card {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-    </style>
 </head>
 <body class="bg-gray-200 font-sans leading-normal tracking-normal">
-
     <div class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
         <h1 class="text-xl font-bold text-center text-gray-800 mb-6">Weather Dashboard</h1>
 
@@ -26,63 +19,108 @@
                     <button onclick="searchCity()" class="w-full mt-2 bg-blue-500 text-white p-2 rounded">Search</button>
                 </div>
                 <div id="searchHistory" class="space-y-2">
-                    <!-- Search history buttons will be added here -->
+                    <!-- Search history buttons will be added here dynamically -->
                 </div>
             </div>
 
             <div class="w-full md:w-3/4 p-4">
                 <div id="currentWeather" class="bg-blue-300 p-4 rounded-lg mb-6">
-                    <!-- Current weather will be updated here -->
+                    <!-- Current weather will be updated here dynamically -->
                 </div>
 
                 <h3 class="text-lg font-semibold mb-4">5-Day Forecast:</h3>
                 <div id="forecastWeather" class="flex flex-wrap justify-between">
-                    <!-- 5-Day forecast will be updated here -->
+                    <!-- 5-Day forecast will be updated here dynamically -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        
-        const apiKey = 'ea7ff1eb9c5e39e6de804dc45031082c';
+        const apiKey = 'YOUR_API_KEY'; // Replace with the actual API key
 
         function searchCity() {
             const cityName = document.getElementById('searchInput').value;
-            const apiURL = `http://api.openweathermap.org/data/2.5/forecast?id=524901&appid={ea7ff1eb9c5e39e6de804dc45031082c};
-
-            fetch(apiURL, {
-                "method": "GET",
-                "headers": {}
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                updateWeatherDashboard(data);
-                addToSearchHistory(cityName);
-            })
-            .catch(err => {
-                console.error('Error fetching weather data:', err);
-            });
+            if (!cityName) return;
+            
+            fetchCurrentWeather(cityName);
+            fetchForecast(cityName);
+            addToSearchHistory(cityName);
         }
 
-        function updateWeatherDashboard(data) {
-            // ... function content ...
+        function fetchCurrentWeather(cityName) {
+            const apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`;
+            fetch(apiURL)
+                .then(response => response.json())
+                .then(data => {
+                    displayCurrentWeather(data);
+                })
+                .catch(err => {
+                    console.error('Error fetching current weather data:', err);
+                });
+        }
+
+        function fetchForecast(cityName) {
+            const apiURL = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric`;
+            fetch(apiURL)
+                .then(response => response.json())
+                .then(data => {
+                    displayForecast(data);
+                })
+                .catch(err => {
+                    console.error('Error fetching forecast data:', err);
+                });
+        }
+
+        function displayCurrentWeather(data) {
+            const currentWeatherDiv = document.getElementById('currentWeather');
+            currentWeatherDiv.innerHTML = `
+                <h2 class="text-lg font-semibold mb-2">${data.name} (${new Date().toLocaleDateString()})</h2>
+                <p>Temp: ${data.main.temp} °C</p>
+                <p>Wind: ${data.wind.speed} m/s</p>
+                <p>Humidity: ${data.main.humidity} %</p>
+            `;
+            // Consider adding the weather condition icons from the API response
+        }
+
+        function displayForecast(data) {
+            const forecastWeatherDiv = document.getElementById('forecastWeather');
+            forecastWeatherDiv.innerHTML = ''; // Clear previous forecasts
+
+            // Process and display the 5-day forecast
+            // For simplicity, we're taking the first 5 entries (3-hour intervals) to represent each day
+            for (let i = 0; i < 5; i++) {
+                const forecast = data.list[i];
+                forecastWeatherDiv.innerHTML += `
+                    <div class="weather-card bg-blue-100 p-4 rounded-lg w-full md:w-1/5 mb-4 md:mb-0">
+                        <h4 class="font-semibold">${new Date(forecast.dt_txt).toLocaleDateString()}</h4>
+                        <p>Temp: ${forecast.main.temp} °C</p>
+                        <p>Wind: ${forecast.wind.speed} m/s</p>
+                        <p>Humidity: ${forecast.main.humidity} %</p>
+                    </div>
+                `;
+                // Consider adding the weather condition icons from the API response
+            }
         }
 
         function addToSearchHistory(cityName) {
-            // ... function content ...
+            const searchHistoryDiv = document.getElementById('searchHistory');
+            // Check if button already exists
+            if (Array.from(searchHistoryDiv.children).some(btn => btn.innerText.toLowerCase() === cityName.toLowerCase())) return;
+
+            const cityButton = document.createElement('button');
+            cityButton.classList.add('w-full', 'text-left', 'p-2', 'rounded', 'bg-blue-200');
+            cityButton.innerText = cityName;
+            cityButton.onclick = function() { searchCityByName(cityName); };
+            searchHistoryDiv.appendChild(cityButton);
         }
 
         function searchCityByName(cityName) {
-            // ... function content ...
+            document.getElementById('searchInput').value = cityName;
+            fetchCurrentWeather(cityName);
+            fetchForecast(cityName);
         }
     </script>
-
 </body>
 </html>
 
