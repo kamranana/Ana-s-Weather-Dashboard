@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,6 @@
         }
     </style>
 </head>
-
 <body class="bg-gray-200 font-sans leading-normal tracking-normal">
 
     <div class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
@@ -24,42 +22,67 @@
             <div class="w-full md:w-1/4 p-4 bg-blue-100 rounded-lg">
                 <h2 class="text-lg font-semibold mb-4">Search for a City:</h2>
                 <div class="mb-4">
-                    <input class="w-full p-2 rounded border border-gray-300" type="text" placeholder="San Diego">
-                    <button class="w-full mt-2 bg-blue-500 text-white p-2 rounded">Search</button>
+                    <input id="searchInput" class="w-full p-2 rounded border border-gray-300" type="text" placeholder="Enter City Name">
+                    <button onclick="searchCity()" class="w-full mt-2 bg-blue-500 text-white p-2 rounded">Search</button>
                 </div>
-                <div class="space-y-2">
-                    <!-- Repeating this for each city in the list -->
-                    <button class="w-full text-left p-2 rounded bg-blue-200">Atlanta</button>
-                    <button class="w-full text-left p-2 rounded bg-blue-200">Denver</button>
-                    <button class="w-full text-left p-2 rounded bg-blue-200">Seattle</button>
-                    <!-- ... other cities ... -->
+                <div id="searchHistory" class="space-y-2">
+                    <!-- Search history buttons will be added here -->
                 </div>
             </div>
 
             <div class="w-full md:w-3/4 p-4">
-                <div class="weather-card bg-blue-300 p-4 rounded-lg mb-6">
-                    <h2 class="text-lg font-semibold mb-2">Atlanta (9/13/2022)</h2>
-                    <p>Temp: 76.62°F</p>
-                    <p>Wind: 8.43 MPH</p>
-                    <p>Humidity: 44 %</p>
+                <div id="currentWeather" class="bg-blue-300 p-4 rounded-lg mb-6">
+                    <!-- Current weather will be updated here -->
                 </div>
 
                 <h3 class="text-lg font-semibold mb-4">5-Day Forecast:</h3>
-                <div class="flex flex-wrap justify-between">
-                    <!-- Repeating this for each day in the forecast -->
-                    <div class="weather-card bg-blue-100 p-4 rounded-lg w-full md:w-1/5 mb-4 md:mb-0">
-                        <h4 class="font-semibold">9/14/2022</h4>
-                        <i class="fas fa-sun text-yellow-400"></i>
-                        <p>Temp: 63.55 °F</p>
-                        <p>Wind: 3.94 MPH</p>
-                        <p>Humidity: 63 %</p>
-                    </div>
-                    <!-- ... other days ... -->
+                <div id="forecastWeather" class="flex flex-wrap justify-between">
+                    <!-- 5-Day forecast will be updated here -->
                 </div>
             </div>
         </div>
     </div>
 
-</body>
+    <script>
+        // Replace with your actual API key
+        const apiKey = '1a82fea2ba7ca61332bc9876349736f7';
 
+        function searchCity() {
+            const cityName = document.getElementById('searchInput').value;
+            const apiURL = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(cityName)}?unitGroup=us&key=${apiKey}&contentType=json`;
+
+            fetch(apiURL, {
+                "method": "GET",
+                "headers": {}
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateWeatherDashboard(data);
+                addToSearchHistory(cityName);
+            })
+            .catch(err => {
+                console.error('Error fetching weather data:', err);
+            });
+        }
+
+        function updateWeatherDashboard(data) {
+            // ... function content ...
+        }
+
+        function addToSearchHistory(cityName) {
+            // ... function content ...
+        }
+
+        function searchCityByName(cityName) {
+            // ... function content ...
+        }
+    </script>
+
+</body>
 </html>
+
