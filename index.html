@@ -44,12 +44,12 @@
     </div>
 
     <script>
-        // Replace with your actual API key
+        
         const apiKey = 'ea7ff1eb9c5e39e6de804dc45031082c';
 
         function searchCity() {
             const cityName = document.getElementById('searchInput').value;
-            const apiURL = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(cityName)}?unitGroup=us&key=${apiKey}&contentType=json`;
+            const apiURL = `http://api.openweathermap.org/data/2.5/forecast?id=524901&appid={ea7ff1eb9c5e39e6de804dc45031082c};
 
             fetch(apiURL, {
                 "method": "GET",
